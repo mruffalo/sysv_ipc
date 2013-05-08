@@ -552,6 +552,15 @@ Semaphore_acquire(Semaphore *self, PyObject *args, PyObject *keywords) {
 
 
 PyObject *
+Semaphore_enter(Semaphore *self) {
+    PyObject *args = PyTuple_New(0);
+    PyObject *retval = Semaphore_P(self, args, NULL);
+    Py_DECREF(args);
+    return retval;
+}
+
+
+PyObject *
 Semaphore_V(Semaphore *self, PyObject *args, PyObject *keywords) {
     return sem_perform_semop(SEMOP_V, self, args, keywords);
 }
@@ -560,6 +569,15 @@ Semaphore_V(Semaphore *self, PyObject *args, PyObject *keywords) {
 PyObject *
 Semaphore_release(Semaphore *self, PyObject *args, PyObject *keywords) {
     return Semaphore_V(self, args, keywords);
+}
+
+
+PyObject *
+Semaphore_exit(Semaphore *self, PyObject *args) {
+    PyObject *release_args = PyTuple_New(0);
+    PyObject *retval =  Semaphore_V(self, release_args, NULL);
+    Py_DECREF(release_args);
+    return retval;
 }
 
 
