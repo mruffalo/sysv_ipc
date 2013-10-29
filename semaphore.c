@@ -552,15 +552,6 @@ Semaphore_acquire(Semaphore *self, PyObject *args, PyObject *keywords) {
 
 
 PyObject *
-Semaphore_enter(Semaphore *self) {
-    PyObject *args = PyTuple_New(0);
-    PyObject *retval = Semaphore_P(self, args, NULL);
-    Py_DECREF(args);
-    return retval;
-}
-
-
-PyObject *
 Semaphore_V(Semaphore *self, PyObject *args, PyObject *keywords) {
     return sem_perform_semop(SEMOP_V, self, args, keywords);
 }
@@ -569,15 +560,6 @@ Semaphore_V(Semaphore *self, PyObject *args, PyObject *keywords) {
 PyObject *
 Semaphore_release(Semaphore *self, PyObject *args, PyObject *keywords) {
     return Semaphore_V(self, args, keywords);
-}
-
-
-PyObject *
-Semaphore_exit(Semaphore *self, PyObject *args) {
-    PyObject *release_args = PyTuple_New(0);
-    PyObject *retval =  Semaphore_V(self, release_args, NULL);
-    Py_DECREF(release_args);
-    return retval;
 }
 
 
@@ -592,6 +574,34 @@ Semaphore_remove(Semaphore *self) {
     return sem_remove(self->id);
 }
 
+PyObject *
+Semaphore_enter(Semaphore *self) {
+    PyObject *args = PyTuple_New(0);
+    PyObject *retval = NULL;
+
+    if (Semaphore_acquire(self, args, NULL)) {
+        retval = (PyObject *)self;
+        Py_INCREF(self);
+    }
+
+    Py_DECREF(args);
+    
+    return retval;
+}
+
+PyObject *
+Semaphore_exit(Semaphore *self, PyObject *args) {
+    PyObject *release_args = PyTuple_New(0);
+    PyObject *retval = NULL;
+
+    DPRINTF("exiting context and releasing semaphore %s\n", self->key);
+
+    retval = Semaphore_release(self, release_args, NULL);
+
+    Py_DECREF(release_args);
+    
+    return retval;
+}
 
 PyObject *
 sem_get_key(Semaphore *self) {

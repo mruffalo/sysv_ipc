@@ -196,6 +196,14 @@ static PyMemberDef Semaphore_members[] = {
 
 
 static PyMethodDef Semaphore_methods[] = {
+    {   "__enter__",
+        (PyCFunction)Semaphore_enter,
+        METH_NOARGS,
+    },
+    {   "__exit__",
+        (PyCFunction)Semaphore_exit,
+        METH_VARARGS,
+    },
     {   "P",
         (PyCFunction)Semaphore_P,
         METH_VARARGS | METH_KEYWORDS,
@@ -206,10 +214,6 @@ static PyMethodDef Semaphore_methods[] = {
         METH_VARARGS | METH_KEYWORDS,
         "Acquire (decrement) the semaphore, waiting if necessary"
     },
-    {   "__enter__",
-        (PyCFunction)Semaphore_enter,
-        METH_NOARGS,
-    },
     {   "V",
         (PyCFunction)Semaphore_V,
         METH_VARARGS | METH_KEYWORDS,
@@ -219,10 +223,6 @@ static PyMethodDef Semaphore_methods[] = {
         (PyCFunction)Semaphore_release,
         METH_VARARGS | METH_KEYWORDS,
         "Release (increment) the semaphore"
-    },
-    {   "__exit__",
-        (PyCFunction)Semaphore_exit,
-        METH_VARARGS,
     },
     {   "Z",
         (PyCFunction)Semaphore_Z,
