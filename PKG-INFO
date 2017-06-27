@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
 Name: sysv_ipc
-Version: 0.6.8
+Version: 0.7.0
 Summary: System V IPC primitives (semaphores, shared memory and message queues) for Python
 Home-page: http://semanchuk.com/philip/sysv_ipc/
 Author: Philip Semanchuk
 Author-email: philip@semanchuk.com
 License: http://creativecommons.org/licenses/BSD/
-Download-URL: http://semanchuk.com/philip/sysv_ipc/sysv_ipc-0.6.8.tar.gz
+Download-URL: http://semanchuk.com/philip/sysv_ipc/sysv_ipc-0.7.0.tar.gz
 Description: Sysv_ipc gives Python programs access to System V semaphores, shared memory 
         and message queues. Most (all?) Unixes (including OS X) support System V IPC. 
         Windows+Cygwin 1.7 might also work. 
@@ -20,7 +20,7 @@ Description: Sysv_ipc gives Python programs access to System V semaphores, share
         You might also be interested in the similar POSIX IPC module at:
         http://semanchuk.com/philip/posix_ipc/
         
-Keywords: ipc inter-process communication semaphore shared memory shm message queue
+Keywords: sysv ipc inter-process communication semaphore shared memory shm message queue
 Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers

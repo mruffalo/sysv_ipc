@@ -2,7 +2,7 @@
 sysv_ipc - A Python module for accessing System V semaphores, shared memory
             and message queues.
 
-Copyright (c) 2008, Philip Semanchuk
+Copyright (c) 2016, Philip Semanchuk
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+#define PY_SSIZE_T_CLEAN
 #include "Python.h"
 #include "structmember.h"
 
@@ -97,11 +98,10 @@ sysv_ipc_attach(PyObject *self, PyObject *args, PyObject *keywords) {
     which I don't want to do.
     */
 	shm = (SharedMemory *)PyObject_New(SharedMemory, &SharedMemoryType);
-	shm->id  = id;
-	shm->address = address;
+	shm->id = id;
 
     DPRINTF("About to call shm_attach()\n");
-	if (Py_None == shm_attach(shm, flags))
+	if (Py_None == shm_attach(shm, address, flags))
 		// All is well
 		return (PyObject *)shm;
 	else
@@ -127,14 +127,14 @@ sysv_ipc_ftok(PyObject *self, PyObject *args, PyObject *keywords) {
         goto error_return;
 
     if (!silence_warning) {
-	    DPRINTF("path=%s, id=%d, rc=%ld\n", path, id, rc);
+	    DPRINTF("path=%s, id=%d, rc=%ld\n", path, id, (long)rc);
 	    PyErr_WarnEx(PyExc_Warning,
 	                 "Use of ftok() is not recommended; see sysv_ipc documentation", 1);
 	}
 
     rc = ftok(path, id);
 
-    DPRINTF("path=%s, id=%d, rc=%ld\n", path, id, rc);
+    DPRINTF("path=%s, id=%d, rc=%ld\n", path, id, (long)rc);
 
     return Py_BuildValue("i", rc);
 
@@ -391,7 +391,7 @@ static PyMethodDef SharedMemory_methods[] = {
     },
     {   "attach",
         (PyCFunction)SharedMemory_attach,
-        METH_VARARGS,
+        METH_VARARGS | METH_KEYWORDS,
         "Attaches the shared memory"
     },
     {   "detach",
@@ -792,7 +792,7 @@ SYSV_IPC_INIT_FUNCTION_NAME(void) {
 
     PyModule_AddStringConstant(module, "VERSION", SYSV_IPC_VERSION);
     PyModule_AddStringConstant(module, "__version__", SYSV_IPC_VERSION);
-    PyModule_AddStringConstant(module, "__copyright__", "Copyright 2008 - 2014 Philip Semanchuk");
+    PyModule_AddStringConstant(module, "__copyright__", "Copyright 2016 Philip Semanchuk");
     PyModule_AddStringConstant(module, "__author__", "Philip Semanchuk");
     PyModule_AddStringConstant(module, "__license__", "BSD");
 
@@ -837,7 +837,7 @@ SYSV_IPC_INIT_FUNCTION_NAME(void) {
     else
         PyDict_SetItemString(module_dict, "Error", pBaseException);
 
-    if (!(pInternalException = PyErr_NewException("sysv_ipc.InternalError", NULL, NULL)))
+    if (!(pInternalException = PyErr_NewException("sysv_ipc.InternalError", pBaseException, NULL)))
         goto error_return;
     else
         PyDict_SetItemString(module_dict, "InternalError", pInternalException);
